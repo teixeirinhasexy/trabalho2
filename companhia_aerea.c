@@ -1,8 +1,8 @@
+#define _GNU_SOURCE
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define _USE_MATH_DEFINES
-#include <math.h>
 #include "companhia_aerea.h"
 
 // Função para calcular a distância entre dois aeroportos

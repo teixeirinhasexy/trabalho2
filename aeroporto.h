@@ -39,7 +39,7 @@ Aeroporto* criarAeroporto();
 void inserirAeroporto(Aeroporto **listaAeroportos, Aeroporto *novoAeroporto);
 
 //função para validar uma linha do arquivo de entrada
-bool validarLinha(char *linha, int numLinha, int *numErros, int linhasErro[]);
+bool validarLinha(char *linha, Aeroporto *Aeroporto , int numLinha, int *numErros, int linhasErro[]);
 
 //função para ler o arquivo e preencher a lista dinâmica com os aeroportos
 void lerAeroportos(char *nomeArquivo, Aeroporto **listaAeroportos, int *numErros, int linhasErro[]);

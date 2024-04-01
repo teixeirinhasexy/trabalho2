@@ -4,7 +4,7 @@ CFLAGS=-Wall -Wextra -std=c99 -pedantic
 all: rotas2024
 
 rotas2024: main.o aeroporto.o companhia_aerea.o util.o
-	$(CC) $(CFLAGS) -o rotas2024 main.o aeroporto.o companhia_aerea.o util.o
+	$(CC) $(CFLAGS) -o rotas2024 main.o aeroporto.o companhia_aerea.o util.o -lm
 
 main.o: main.c aeroporto.h companhia_aerea.h util.h
 	$(CC) $(CFLAGS) -c main.c

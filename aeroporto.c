@@ -58,23 +58,32 @@ void inserirAeroporto(Aeroporto **listaAeroportos, Aeroporto *novoAeroporto) {
 }
 
 // Função para validar uma linha do arquivo de entrada
-/*bool validarLinha(char *linha, int numLinha, int *numErros, int linhasErro[]) {
-    // Verificar se todos os parâmetros foram lidos corretamente
-    char ICAO[5], IATA[4], cidade[50];
-    int latitude[3], longitude[3], timeZone;
-    char latitude_dir, longitude_dir;
-
-    int numParam = sscanf(linha, "%4s %3s %d %d %d %c %d %d %d %c %49s %d", ICAO, IATA, &latitude[0], &latitude[1], &latitude[2], &latitude_dir, &longitude[0], &longitude[1], &longitude[2], &longitude_dir, cidade, &timeZone);
-    
-    if ( numParam != 12 || latitude_dir != 'N' || latitude_dir != 'S' || longitude_dir != 'E' || longitude_dir != 'W' || timeZone < -12 || timeZone > 14 || strlen(ICAO) != 4 || strlen(IATA) != 3) {
-    linhasErro[*numErros] = numLinha;
-    (*numErros)++;
-    return false;
+bool validarLinha(char *linha, Aeroporto *novoAeroporto, int numLinha, int *numErros, int linhasErro[]) {
+    if ((sscanf(linha, "%s %s %d %d %d %c %d %d %d %c %s %d",
+               novoAeroporto->identificador_ICAO,
+               novoAeroporto->identificador_IATA,
+               &novoAeroporto->localizacao.latitude_hora,
+               &novoAeroporto->localizacao.latitude_minuto,
+               &novoAeroporto->localizacao.latitude_segundo,
+               &novoAeroporto->localizacao.latitude_dir,
+               &novoAeroporto->localizacao.longitude_hora,
+               &novoAeroporto->localizacao.longitude_minuto,
+               &novoAeroporto->localizacao.longitude_segundo,
+               &novoAeroporto->localizacao.longitude_dir,
+               novoAeroporto->cidade,
+               &novoAeroporto->timeZone)) != 12 ||
+        (novoAeroporto->localizacao.latitude_dir != 'N' && novoAeroporto->localizacao.latitude_dir != 'S') ||
+        (novoAeroporto->localizacao.longitude_dir != 'W' && novoAeroporto->localizacao.longitude_dir != 'E') ||
+        novoAeroporto->timeZone < -12 || novoAeroporto->timeZone > 14) {
+        linhasErro[*numErros] = numLinha;
+        (*numErros)++;
+        return false;
     }
 
     return true;
 }
-*/
+
+
 
 // Função para ler o arquivo e preencher a lista dinâmica com os aeroportos
 void lerAeroportos(char *nomeArquivo, Aeroporto **listaAeroportos, int *numErros, int linhasErro[]) {
@@ -88,25 +97,8 @@ void lerAeroportos(char *nomeArquivo, Aeroporto **listaAeroportos, int *numErros
 
     while (fgets(linha, sizeof(linha), arquivo) != NULL) {
         numLinha++;
-        if (!validarLinha(linha, numLinha, numErros, linhasErro)) {
-            continue;
-        }
-
         Aeroporto *novoAeroporto = criarAeroporto();
-        sscanf(linha, "%s %s %d %d %d %c %d %d %d %c %s %d",
-               novoAeroporto->identificador_ICAO,
-               novoAeroporto->identificador_IATA,
-               &novoAeroporto->localizacao.latitude_hora,
-               &novoAeroporto->localizacao.latitude_minuto,
-               &novoAeroporto->localizacao.latitude_segundo,
-               &novoAeroporto->localizacao.latitude_dir,
-               &novoAeroporto->localizacao.longitude_hora,
-               &novoAeroporto->localizacao.longitude_minuto,
-               &novoAeroporto->localizacao.longitude_segundo,
-               &novoAeroporto->localizacao.longitude_dir,
-               novoAeroporto->cidade,
-               &novoAeroporto->timeZone);
-
+        if (!validarLinha(linha, novoAeroporto, numLinha, numErros, linhasErro)) {free(novoAeroporto); novoAeroporto = NULL; continue;}
         inserirAeroporto(listaAeroportos, novoAeroporto);
     }
 
