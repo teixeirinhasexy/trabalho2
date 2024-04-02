@@ -47,7 +47,7 @@ AeroportoNode *inserirNo(AeroportoNode *raiz, Aeroporto *aeroporto) {
         return criarAeroportoNode(aeroporto);
     }
 
-    int comparacao = strcmp(aeroporto->cidade, raiz->aeroporto->cidade);
+    int comparacao = strcmp(aeroporto->identificador_IATA, raiz->aeroporto->identificador_IATA);
 
     if (comparacao < 0) {
         raiz->esquerda = inserirNo(raiz->esquerda, aeroporto);
@@ -139,7 +139,7 @@ void imprimirAeroporto(Aeroporto *aeroporto) {
     printf("\n");
 }
 
-Aeroporto* buscarAeroportoPorIATA(AeroportoNode *raiz, char *codigoIATA) {
+Aeroporto* procurarAeroportoPorIATA(AeroportoNode *raiz, char *codigoIATA) {
     if (raiz == NULL) {
         return NULL; // Se a raiz for nula, o aeroporto não foi encontrado
     }
@@ -154,10 +154,10 @@ Aeroporto* buscarAeroportoPorIATA(AeroportoNode *raiz, char *codigoIATA) {
 
     // Se o código IATA desejado for menor, procuramos na subárvore esquerda
     if (comparacao > 0) {
-        return buscarAeroportoPorIATA(raiz->esquerda, codigoIATA);
+        return procurarAeroportoPorIATA(raiz->esquerda, codigoIATA);
     }
     // Se o código IATA desejado for maior, procuramos na subárvore direita
     else {
-        return buscarAeroportoPorIATA(raiz->direita, codigoIATA);
+        return procurarAeroportoPorIATA(raiz->direita, codigoIATA);
     }
 }

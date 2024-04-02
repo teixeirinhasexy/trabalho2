@@ -8,7 +8,6 @@ int main(int argc, char *argv[]) {
     AeroportoNode *raiz = NULL;
     VooNode *raizVoo = NULL;
     AirlineNode *raizAirline = NULL;
-    Airline *temp = NULL;
     //Airline *listaAirlines = NULL;
     //Aeroporto *listaAeroportos = NULL;
     int numErrosAeroportos = 0;
@@ -20,7 +19,7 @@ int main(int argc, char *argv[]) {
     //lerAeroportos("aeroportos.txt", &listaAeroportos, &numErrosAeroportos, linhasErroAeroportos);
     //lerVoos("rotas.txt" , &listaAirlines, listaAeroportos);
     lerAeroportos("aeroportos.txt", &raiz, &numErrosAeroportos, linhasErroAeroportos);
-    lerVoosAirlines("rotas.txt", &raizAirline, &raizVoo, temp);
+    lerVoosAirlines("rotas.txt", &raizVoo, &raizAirline, raiz);
     if(argc >= 2) {
         switch (selecao) {
         case '0':

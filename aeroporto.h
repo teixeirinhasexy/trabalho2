@@ -47,7 +47,7 @@ void libertarArvore(AeroportoNode *raiz);
 void imprimirEmOrdem(AeroportoNode *raiz);
 void imprimirAeroporto(Aeroporto *aeroporto);
 
-Aeroporto* buscarAeroportoPorIATA(AeroportoNode *raiz, char *codigoIATA);
+Aeroporto* procurarAeroportoPorIATA(AeroportoNode *raiz, char *codigoIATA);
 
 
 #endif
