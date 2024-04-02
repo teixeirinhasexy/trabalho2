@@ -10,7 +10,6 @@ typedef enum {
     N, O, P, Q, R, S, T, U, V, W, X, Y, Z
 } ValorLetra;
 
-
 typedef struct Localizcao {
     int latitude_hora;
     int latitude_minuto;
@@ -29,25 +28,26 @@ typedef struct Aeroporto {
     Localizacao localizacao;
     char cidade[50]; //cidade onde se encontra o aeroporto
     int timeZone; //time zone (-12 a 14)
-    struct Aeroporto *prox; //ponteiro para o próximo aeroporto na lista
 } Aeroporto;
+
+//
+typedef struct AeroportoNode {
+    Aeroporto *aeroporto;
+    struct AeroportoNode *esquerda;
+    struct AeroportoNode *direita;
+} AeroportoNode;
 
 //função para criar um novo aeroporto
 Aeroporto* criarAeroporto();
-
-//função para inserir um aeroporto na lista mantendo a ordem alfabética da cidade
-void inserirAeroporto(Aeroporto **listaAeroportos, Aeroporto *novoAeroporto);
-
 //função para validar uma linha do arquivo de entrada
 bool validarLinha(char *linha, Aeroporto *Aeroporto , int numLinha, int *numErros, int linhasErro[]);
-
-//função para ler o arquivo e preencher a lista dinâmica com os aeroportos
-void lerAeroportos(char *nomeArquivo, Aeroporto **listaAeroportos, int *numErros, int linhasErro[]);
-
 //função para liberar a memória alocada para a lista dinâmica de aeroportos
-void liberarAeroportos(Aeroporto *listaAeroportos);
+void lerAeroportos(char *nomeArquivo, AeroportoNode **raiz, int *numErros, int linhasErro[]);
+void libertarArvore(AeroportoNode *raiz);
+void imprimirEmOrdem(AeroportoNode *raiz);
+void imprimirAeroporto(Aeroporto *aeroporto);
 
-//função para imprimir os aeroportos
-void imprimirAeroportos(Aeroporto *listaAeroportos);
+Aeroporto* buscarAeroportoPorIATA(AeroportoNode *raiz, char *codigoIATA);
+
 
 #endif

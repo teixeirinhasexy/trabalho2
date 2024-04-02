@@ -18,8 +18,19 @@ Aeroporto* criarAeroporto() {
         printf("Erro ao alocar memória para o aeroporto.\n");
         exit(1);
     }
-    novoAeroporto->prox = NULL;
     return novoAeroporto;
+}
+
+AeroportoNode *criarAeroportoNode(Aeroporto *aeroporto) {
+    AeroportoNode *novoAeroportoNode = (AeroportoNode *)calloc(1, sizeof(AeroportoNode));
+    if (novoAeroportoNode == NULL) {
+        printf("Erro ao alocar memória para o nó do aeroporto.\n");
+        exit(1);
+    }
+    novoAeroportoNode->aeroporto = aeroporto;
+    novoAeroportoNode->direita = NULL;
+    novoAeroportoNode->esquerda = NULL;
+    return novoAeroportoNode;
 }
 
 /*----------------------------------------------------------------------------------------
@@ -30,31 +41,27 @@ Aeroporto* criarAeroporto() {
          o tipo ValorLetra
 | Devolve: Devolve o deslocamento convertido para o tipo ValorLetra
 ------------------------------------------------------------------------------------------*/
-ValorLetra obterValorLetra(char letra) {
-    return (ValorLetra)(toupper(letra) - 'A');
-}
 
-// Função para inserir um aeroporto na lista mantendo a ordem alfabética da cidade
-void inserirAeroporto(Aeroporto **listaAeroportos, Aeroporto *novoAeroporto) {
-    Aeroporto *atual = *listaAeroportos;
-    Aeroporto *anterior = NULL;
-
-    ValorLetra valorNovaCidade = obterValorLetra(novoAeroporto->cidade[0]);
-
-    // Percorrer a lista até encontrar o local onde o novo aeroporto deve ser inserido
-    while (atual != NULL && obterValorLetra(atual->cidade[0]) < valorNovaCidade) {
-        anterior = atual;
-        atual = atual->prox;
+AeroportoNode *inserirNo(AeroportoNode *raiz, Aeroporto *aeroporto) {
+    if (raiz == NULL) {
+        return criarAeroportoNode(aeroporto);
     }
 
-    // Inserir o novo aeroporto na lista
-    if (anterior == NULL) {
-        novoAeroporto->prox = *listaAeroportos;
-        *listaAeroportos = novoAeroporto;
+    int comparacao = strcmp(aeroporto->cidade, raiz->aeroporto->cidade);
+
+    if (comparacao < 0) {
+        raiz->esquerda = inserirNo(raiz->esquerda, aeroporto);
+    } else if (comparacao > 0) {
+        raiz->direita = inserirNo(raiz->direita, aeroporto);
     } else {
-        anterior->prox = novoAeroporto;
-        novoAeroporto->prox = atual;
+        // A cidade do novo aeroporto é a mesma que a cidade do aeroporto existente
+        // Inserir o novo aeroporto na lista encadeada dentro do nó da árvore
+        AeroportoNode *novoNo = criarAeroportoNode(aeroporto);
+        novoNo->esquerda = raiz->esquerda; // Aponta para a lista existente
+        raiz->esquerda = novoNo; // Atualiza a referência para a nova lista
     }
+
+    return raiz;
 }
 
 // Função para validar uma linha do arquivo de entrada
@@ -83,10 +90,7 @@ bool validarLinha(char *linha, Aeroporto *novoAeroporto, int numLinha, int *numE
     return true;
 }
 
-
-
-// Função para ler o arquivo e preencher a lista dinâmica com os aeroportos
-void lerAeroportos(char *nomeArquivo, Aeroporto **listaAeroportos, int *numErros, int linhasErro[]) {
+void lerAeroportos(char *nomeArquivo, AeroportoNode **raiz, int *numErros, int linhasErro[]) {
     FILE *arquivo = fopen(nomeArquivo, "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo %s.\n", nomeArquivo);
@@ -98,34 +102,62 @@ void lerAeroportos(char *nomeArquivo, Aeroporto **listaAeroportos, int *numErros
     while (fgets(linha, sizeof(linha), arquivo) != NULL) {
         numLinha++;
         Aeroporto *novoAeroporto = criarAeroporto();
-        if (!validarLinha(linha, novoAeroporto, numLinha, numErros, linhasErro)) {free(novoAeroporto); novoAeroporto = NULL; continue;}
-        inserirAeroporto(listaAeroportos, novoAeroporto);
+        if (!validarLinha(linha, novoAeroporto, numLinha, numErros, linhasErro)) {
+            free(novoAeroporto);
+            continue;
+        }
+        *raiz = inserirNo(*raiz, novoAeroporto);
     }
 
     fclose(arquivo);
 }
 
-// Função para liberar a memória alocada para a lista dinâmica de aeroportos
-void liberarAeroportos(Aeroporto *listaAeroportos) {
-    Aeroporto *temp;
-    while (listaAeroportos != NULL) {
-        temp = listaAeroportos;
-        listaAeroportos = listaAeroportos->prox;
-        free(temp);
+void libertarArvore(AeroportoNode *raiz) {
+    if (raiz != NULL) {
+        libertarArvore(raiz->esquerda);
+        libertarArvore(raiz->direita);
+        free(raiz->aeroporto); // Liberar a memória alocada para o Aeroporto
+        free(raiz);
     }
 }
 
+void imprimirEmOrdem(AeroportoNode *raiz) {
+    if (raiz != NULL) {
+        imprimirEmOrdem(raiz->esquerda);
+        imprimirAeroporto(raiz->aeroporto);
+        imprimirEmOrdem(raiz->direita);
+    }
+}
 
-void imprimirAeroportos(Aeroporto *listaAeroportos) {
-    Aeroporto *temp = listaAeroportos;
-    while (temp != NULL) {
-        printf("ICAO: %s\n", temp->identificador_ICAO);
-        printf("IATA: %s\n", temp->identificador_IATA);
-        printf("Latitude: %d %d %d %c\n", temp->localizacao.latitude_hora, temp->localizacao.latitude_minuto, temp->localizacao.latitude_segundo, temp->localizacao.latitude_dir);
-        printf("Longitude: %d %d %d %c\n", temp->localizacao.longitude_hora, temp->localizacao.longitude_minuto, temp->localizacao.longitude_segundo, temp->localizacao.longitude_dir);
-        printf("Cidade: %s\n", temp->cidade);
-        printf("TimeZone: %d\n", temp->timeZone);
-        printf("\n");
-        temp = temp->prox;
+void imprimirAeroporto(Aeroporto *aeroporto) {
+    printf("ICAO: %s\n", aeroporto->identificador_ICAO);
+    printf("IATA: %s\n", aeroporto->identificador_IATA);
+    printf("Latitude: %d %d %d %c\n", aeroporto->localizacao.latitude_hora, aeroporto->localizacao.latitude_minuto, aeroporto->localizacao.latitude_segundo, aeroporto->localizacao.latitude_dir);
+    printf("Longitude: %d %d %d %c\n", aeroporto->localizacao.longitude_hora, aeroporto->localizacao.longitude_minuto, aeroporto->localizacao.longitude_segundo, aeroporto->localizacao.longitude_dir);
+    printf("Cidade: %s\n", aeroporto->cidade);
+    printf("TimeZone: %d\n", aeroporto->timeZone);
+    printf("\n");
+}
+
+Aeroporto* buscarAeroportoPorIATA(AeroportoNode *raiz, char *codigoIATA) {
+    if (raiz == NULL) {
+        return NULL; // Se a raiz for nula, o aeroporto não foi encontrado
+    }
+
+    // Comparar o código IATA atual com o código desejado
+    int comparacao = strcmp(raiz->aeroporto->identificador_IATA, codigoIATA);
+
+    // Se encontrarmos o aeroporto com o código IATA desejado, retornamos a raiz
+    if (comparacao == 0) {
+        return raiz->aeroporto;
+    }
+
+    // Se o código IATA desejado for menor, procuramos na subárvore esquerda
+    if (comparacao > 0) {
+        return buscarAeroportoPorIATA(raiz->esquerda, codigoIATA);
+    }
+    // Se o código IATA desejado for maior, procuramos na subárvore direita
+    else {
+        return buscarAeroportoPorIATA(raiz->direita, codigoIATA);
     }
 }

@@ -3,35 +3,44 @@
 
 #include "aeroporto.h"
 
-typedef struct HorasVoo {
-    int hora_partida_hora;
-    int hora_partida_minuto;
-    int hora_chegada_hora;
-    int hora_chegada_minuto;
-} HorasVoo;
+
 
 
 typedef struct Voo {
     char codigo[10];
     Aeroporto *partida;
     Aeroporto *chegada;
-    HorasVoo horasvoo;
+    char horaPart[5];
+    char horaCheg[5];
     float distancia;
-    struct Voo *prox; // Ponteiro para o próximo voo na lista
 } Voo;
+
+typedef struct vooNode {
+    Voo *voo;
+    struct VooNode *esquerda;
+    struct VooNode *direita ;
+} VooNode ;
+
 
 // Definindo uma estrutura para representar uma companhia aérea
 typedef struct Airline {
     char nome[50];
-    Voo *voos; // Lista de voos da companhia aérea
-    struct Airline *prox; // Ponteiro para a próxima companhia aérea na lista
+    VooNode *raizVoo; // Lista de voos da companhia aérea
 } Airline;
 
-
-void lerVoos(char *nomeArquivo, Airline **listaAirlines, Aeroporto *listaAeroportos);
-void libertarAirlines(Airline *listaAirlines);
-void libertarVoos(Voo *listaVoos);
-void imprimirRotas(Airline *listaAirlines);
-void imprimir_voo(Voo *voo);
+typedef struct AirlineNode {
+    Airline *airline;
+    struct AirlineNode *esquerda;
+    struct AirlineNode *direita;
+} AirlineNode;
 
 #endif // ROTAS_H
+
+
+void lerVoosAirlines(char *nomeArquivo, VooNode **raizVoo, AirlineNode **raizAirline, Airline *temp);
+void libertarArvoreAirline(AirlineNode *raizAirline);
+void libertarArvoreVoo(VooNode *raizVoo);
+void imprimirAirline(Airline *airline);
+void imprimirEmOrdemAirline(AirlineNode *raizAirline);
+void imprimirEmOrdemVoo (VooNode *raizVoo);
+void imprimirVoo(Voo *voo);

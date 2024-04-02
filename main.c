@@ -5,18 +5,22 @@
 #include "util.h"
 
 int main(int argc, char *argv[]) {
-    
-    Aeroporto *listaAeroportos = NULL;
-    Airline *listaAirlines = NULL;
+    AeroportoNode *raiz = NULL;
+    VooNode *raizVoo = NULL;
+    AirlineNode *raizAirline = NULL;
+    Airline *temp = NULL;
+    //Airline *listaAirlines = NULL;
+    //Aeroporto *listaAeroportos = NULL;
     int numErrosAeroportos = 0;
     int linhasErroAeroportos[MAX_ERROS];
     char selecao = Comando_Selecionado(argc, argv);
 
     if (argc == 1) {mostrar_comandos(); return 0;}
 
-    lerAeroportos("aeroportos.txt", &listaAeroportos, &numErrosAeroportos, linhasErroAeroportos);
-    lerVoos("rotas.txt" , &listaAirlines, listaAeroportos);
-    
+    //lerAeroportos("aeroportos.txt", &listaAeroportos, &numErrosAeroportos, linhasErroAeroportos);
+    //lerVoos("rotas.txt" , &listaAirlines, listaAeroportos);
+    lerAeroportos("aeroportos.txt", &raiz, &numErrosAeroportos, linhasErroAeroportos);
+    lerVoosAirlines("rotas.txt", &raizAirline, &raizVoo, temp);
     if(argc >= 2) {
         switch (selecao) {
         case '0':
@@ -25,7 +29,8 @@ int main(int argc, char *argv[]) {
             break;
         case '1': /* Lista todos os aeroportos */
             printf("Aeroportos:\n");
-            imprimirAeroportos(listaAeroportos);
+            //imprimirAeroportos(listaAeroportos);
+            imprimirEmOrdem(raiz);
             printf("\n");
             printf("Numero total de erros nos aeroportos: %d\n", numErrosAeroportos);
             printf("Linhas com erros nos aeroportos:");
@@ -37,20 +42,21 @@ int main(int argc, char *argv[]) {
             break;
         case '2': /* Lista todos os voos */
             printf("Rotas:\n");
-            imprimirRotas(listaAirlines);
+            //imprimirRotas(listaAirlines);
+            imprimirEmOrdemAirline(raizAirline);
             printf("\ncomand(-limpar) para limpar o ecra");
             break;
         case '3': /* Lista de rotas diretas entre dois aeroportos */
-            Listar_Rotas_Diretas(listaAirlines, argv[1], argv[2]);
+            //Listar_Rotas_Diretas(listaAirlines, argv[1], argv[2]);
             printf("\ncomand(-limpar) para limpar o ecra");
             break;
         case '4': /* Pedido de rotas com uma ligação/escala */
-            Listar_Rotas_Com_Uma_Escala(listaAirlines, argv[1], argv[2]);
+            //Listar_Rotas_Com_Uma_Escala(listaAirlines, argv[1], argv[2]);
             printf("\ncomand(-limpar) para limpar o ecra");
             break;
         
         case '5':  /* Pedido de rotas com duas ligação/escala */
-            Listar_Rotas_Com_Duas_Escalas(listaAirlines, argv[1], argv[2]);
+            //Listar_Rotas_Com_Duas_Escalas(listaAirlines, argv[1], argv[2]);
             printf("\ncomand(-limpar) para limpar o ecra");
             break;
             
@@ -73,7 +79,9 @@ int main(int argc, char *argv[]) {
 
     }
 
-    liberarAeroportos(listaAeroportos);
-    libertarAirlines(listaAirlines);
+    //liberarAeroportos(listaAeroportos);
+    //libertarAirlines(listaAirlines);
+    libertarArvore(raiz);
+    libertarArvoreAirline(raizAirline);
     return 0;
 }
