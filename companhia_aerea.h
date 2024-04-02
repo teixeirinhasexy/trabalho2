@@ -34,13 +34,21 @@ typedef struct AirlineNode {
     struct AirlineNode *direita;
 } AirlineNode;
 
+typedef struct No 
+{
+    AirlineNode *raiz;
+    AirlineNode *airlinenode;
+} NO;
+
+
+
 #endif // ROTAS_H
 
 
-void lerVoosAirlines(char *nomeArquivo, VooNode **raizVoo, AirlineNode **raizAirline, AeroportoNode *raiz);
+void lerVoosAirlines(char *nomeArquivo, AirlineNode **raizAirline, AeroportoNode *raiz);
 void libertarArvoreAirline(AirlineNode *raizAirline);
 void libertarArvoreVoo(VooNode *raizVoo);
-void imprimirAirline(AirlineNode *raizAirline);
+void imprimirAirline(Airline * airline, AirlineNode *raizAirline);
 void imprimirEmOrdemAirline(AirlineNode *raizAirline);
 void imprimirEmOrdemVoo (VooNode *raizVoo);
 void imprimirVoo(Voo *voo);

@@ -71,8 +71,8 @@ VooNode *inserirNoVoo(VooNode *raizVoo, Voo *voo) {
         return criarVooNode(voo);
     }
 
-    int comparacao = strcmp(voo->codigo, raizVoo->voo->codigo);
-
+    //int comparacao = strcmp(voo->horaPart, raizVoo->voo->horaPart);
+    float comparacao = (voo->distancia) - (raizVoo->voo->distancia);
     if (comparacao < 0) {
         raizVoo->esquerda = inserirNoVoo((raizVoo->esquerda), voo);
     } else if (comparacao > 0) {
@@ -88,43 +88,47 @@ VooNode *inserirNoVoo(VooNode *raizVoo, Voo *voo) {
     return raizVoo;
 }
 
-AirlineNode *inserirNoAirline(AirlineNode *raizAirline, Airline *airline) {
+AirlineNode *inserirNoAirline(AirlineNode *raizAirline, AirlineNode *novoAirlineNode) {
     if (raizAirline == NULL) {
-        return criarAirlineNode(airline);
+        // Se a raiz é nula, o novo nó se torna a nova raiz
+        return novoAirlineNode;
     }
 
-    int comparacao = strcmp(airline->nome, raizAirline->airline->nome);
+    // Comparar os nomes das Airlines
+    int comparacao = strcmp(novoAirlineNode->airline->nome, raizAirline->airline->nome);
 
     if (comparacao < 0) {
-        raizAirline->esquerda = inserirNoAirline(raizAirline->esquerda, airline);
+        // Se o nome da nova Airline for menor, inserir à esquerda
+        raizAirline->esquerda = inserirNoAirline(raizAirline->esquerda, novoAirlineNode);
     } else if (comparacao > 0) {
-        raizAirline->direita = inserirNoAirline(raizAirline->direita, airline);
+        // Se o nome da nova Airline for maior, inserir à direita
+        raizAirline->direita = inserirNoAirline(raizAirline->direita, novoAirlineNode);
     } else {
-        // A cidade do novo aeroporto é a mesma que a cidade do aeroporto existente
-        // Inserir o novo aeroporto na lista encadeada dentro do nó da árvore
-        AirlineNode *novoNo = criarAirlineNode(airline);
-        novoNo->esquerda = raizAirline->esquerda; // Aponta para a lista existente
-        raizAirline->esquerda = novoNo; // Atualiza a referência para a nova lista
+        // Se as Airlines forem iguais, não fazemos nada (ou podemos tratar de outra forma)
+        printf("Erro: Airline já existe na árvore.\n");
     }
 
     return raizAirline;
 }
 
-void lerVoosAirlines (char *nomeArquivo, VooNode **raizVoo, AirlineNode **raizAirline , AeroportoNode *raizAeroporto){
+
+void lerVoosAirlines (char *nomeArquivo, AirlineNode **raizAirline, AeroportoNode *raizAeroporto){
     FILE *arquivo = fopen(nomeArquivo, "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo %s.\n", nomeArquivo);
         exit(1);
     }
-
+    AirlineNode *novoAirlineNode = NULL;
     char linha[100];
     while (fgets(linha, sizeof(linha), arquivo) != NULL) {
         if (strstr(linha, "AIRLINE:") != NULL) {
+            novoAirlineNode = NULL;
             Airline *novoAirline = criarAirline();
             sscanf(linha, "AIRLINE: %s", novoAirline->nome);
-            *raizAirline = inserirNoAirline(*raizAirline, novoAirline);;
+            AirlineNode *airlinenode = criarAirlineNode(novoAirline);
+            novoAirlineNode = airlinenode;
+            *raizAirline = inserirNoAirline(*raizAirline, airlinenode);
         }
-        
         else {
             Voo *novoVoo = criarVoo();
             char IATA_part[4], IATA_cheg[4]; 
@@ -138,9 +142,13 @@ void lerVoosAirlines (char *nomeArquivo, VooNode **raizVoo, AirlineNode **raizAi
             novoVoo->partida = procurarAeroportoPorIATA(raizAeroporto, IATA_part);
             novoVoo->chegada = procurarAeroportoPorIATA(raizAeroporto, IATA_cheg);
             novoVoo->distancia = calcularDistancia(novoVoo->partida, novoVoo->chegada);
-            *raizVoo = inserirNoVoo(*raizVoo, novoVoo);
-            (*raizAirline)->raizVoo = *raizVoo;
-            
+            // Verifica se há uma Airline válida antes de tentar acessar sua raiz de Voo
+            if (novoAirlineNode != NULL) {
+                novoAirlineNode->raizVoo = inserirNoVoo(novoAirlineNode->raizVoo, novoVoo);
+            } else {
+                printf("Erro: Não há Airline válida para adicionar o voo.\n");
+                free(novoVoo); // Liberar a memória do Voo, já que não será usado
+            }
         }
     }
     fclose(arquivo);
@@ -150,7 +158,7 @@ void libertarArvoreVoo(VooNode *raizVoo) {
     if (raizVoo != NULL) {
         libertarArvoreVoo(raizVoo->esquerda);
         libertarArvoreVoo(raizVoo->direita);
-        free(raizVoo->voo); // Liberar a memória alocada para o Aeroporto
+        free(raizVoo->voo); // Liberar a memória alocada para o Voo
         free(raizVoo);
     }
 }
@@ -160,27 +168,16 @@ void libertarArvoreAirline(AirlineNode *raizAirline) {
         libertarArvoreAirline(raizAirline->esquerda);
         libertarArvoreAirline(raizAirline->direita);
         libertarArvoreVoo(raizAirline->raizVoo);
-        free(raizAirline->airline); // Liberar a memória alocada para o Aeroporto
+        free(raizAirline->airline); // Liberar a memória alocada para a Airline
         free(raizAirline);
     }
 }
 
 void imprimirVoo(Voo *voo) {
-    printf("\nCódigo do Voo: %s\n", voo->codigo);
-    if(voo->partida == NULL) {
-        printf("Partida: %s %s\n", "ERRO", voo->horaPart);
-    }
-    else {
-        printf("Partida: %s %s\n", voo->partida->cidade, voo->horaPart);
-    }
-    if (voo->chegada == NULL)
-    {
-        printf("Chegada: %s %s\n", "ERRO", voo->horaCheg);
-    }
-    else {
-        printf("Chegada: %s %s\n", voo->chegada->cidade, voo->horaCheg);
-    }
-    printf("Distancia: %.2f\n", voo->distancia);
+    printf("nº:%s ", voo->codigo);
+    printf("Partida:%s %s ", voo->partida->identificador_IATA, voo->horaPart);
+    printf("Chegada:%s %s ", voo->chegada->identificador_IATA, voo->horaCheg);
+    printf("Distancia:%.2f\n", voo->distancia);
 }
 
 void imprimirEmOrdemVoo (VooNode *raizVoo) {
@@ -191,15 +188,17 @@ void imprimirEmOrdemVoo (VooNode *raizVoo) {
     }
 }
 
-void imprimirAirline(AirlineNode *raizAirline) {
-    printf("\nAIRLINE: %s" , raizAirline->airline->nome);
+void imprimirAirline(Airline *airline, AirlineNode *raizAirline) {
+    printf("\nAIRLINE: %s\n", airline->nome);
+    printf("\n--Número-- ----Partida---- -----Chegada----- ----Distancia----\n");
     imprimirEmOrdemVoo(raizAirline->raizVoo);
 }
+
 
 void imprimirEmOrdemAirline(AirlineNode *raizAirline) {
     if (raizAirline != NULL) {
         imprimirEmOrdemAirline(raizAirline->esquerda);
-        imprimirAirline(raizAirline);
+        imprimirAirline(raizAirline->airline, raizAirline);
         imprimirEmOrdemAirline(raizAirline->direita);
     }
 }
