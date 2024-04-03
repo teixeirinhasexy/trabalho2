@@ -18,12 +18,12 @@ int main(int argc, char *argv[]) {
     lerVoosAirlines("rotas.txt", &raizAirline, raiz);
     if(argc >= 2) {
         switch (selecao) {
-        case '0':
+        case 0:
             system("clear");
             system("cls");
             break;
 
-        case '1': 
+        case 1: 
             printf("Aeroportos:\n");
             imprimirEmOrdem(raiz);
             printf("\n");
@@ -36,43 +36,55 @@ int main(int argc, char *argv[]) {
             printf("\ncomand(-limpar) para limpar o ecra");
             break;
 
-        case '2': 
+        case 2: 
             printf("Rotas:\n");
             imprimirEmOrdemAirline(raizAirline);
             printf("\ncomand(-limpar) para limpar o ecra");
             break;
 
-        case '3': 
+        case 3: 
             procurarArmazenarVoosDiretos(raizAirline, argv[1], argv[2], &raizRotas);
             imprimirRotas(raizRotas);
             libertarRotas(raizRotas);
             printf("\ncomand(-limpar) para limpar o ecra");
             break;
             
-        case '4': 
+        case 4: 
             procurarArmazenarVoosComUmaEscala(raizAirline, argv[1], argv[2], &raizRotas);
             imprimirRotas(raizRotas);
             libertarRotas(raizRotas);
             printf("\ncomand(-limpar) para limpar o ecra");
             break;
         
-        case '5': 
+        case 5: 
             procurarArmazenarVoosComDuasEscala(raizAirline, argv[1], argv[2], &raizRotas);
             imprimirRotas(raizRotas);
             libertarRotas(raizRotas);
             printf("\ncomand(-limpar) para limpar o ecra");
             break;
             
-        case '6': 
-
+        case 6: 
+            procurarArmazenarVoosComUmaEscala_LIG(raizAirline, argv[1], argv[2], &raizRotas);
+            imprimirRotas(raizRotas);
+            libertarRotas(raizRotas);
             break;
 
-        case '7': /* Pedido de rotas com uma ligação e com preocupação de ligação horária */
-            /* Implementação para listar rotas com uma escala e horários compatíveis */
+        case -6: /* Pedido de rotas com uma ligação e com preocupação de ligação horária */
+            procurarArmazenarVoosComUmaEscala_LIG(raizAirline, argv[1], argv[2], &raizRotas);
+            imprimirRotas2(raizRotas);
+            libertarRotas(raizRotas);
             break;
 
-        case '8': /* Pedido de rotas com preocupação de ligação horária e com a menor distância */
-            /* Implementação para listar rotas com critérios de tempo e distância */
+        case 7: /* Pedido de rotas com preocupação de ligação horária e com a menor distância */
+            procurarArmazenarVoosComDuasEscala_LIG(raizAirline, argv[1], argv[2], &raizRotas);
+            imprimirRotas(raizRotas);
+            libertarRotas(raizRotas);
+            break;
+        
+        case -7: /* Pedido de rotas com preocupação de ligação horária e com a menor distância */
+            procurarArmazenarVoosComDuasEscala_LIG(raizAirline, argv[1], argv[2], &raizRotas);
+            imprimirRotas2(raizRotas);
+            libertarRotas(raizRotas);
             break;
 
         default:
