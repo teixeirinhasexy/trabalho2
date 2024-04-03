@@ -8,8 +8,7 @@
 | Nome: criarAeroporto
 | Ação: Aloca um bloco de memória do tamanho do tipo Aeroporto utilizando a função calloc
 |       que inicializa todos os bits a zero, não sendo necessário inicializar os campos da
-        estrutura Aeroporto. Verifica se a alocação de memória foi bem sucedida. Inicializa
-        o ponteiro 'prox' do novo aeroporto como NULL.
+        estrutura Aeroporto. Verifica se a alocação de memória foi bem sucedida, se não for dá exit.
 | Devolve: O ponteiro para o novoAeroporto.
 ------------------------------------------------------------------------------------------*/
 Aeroporto* criarAeroporto() {
@@ -20,7 +19,14 @@ Aeroporto* criarAeroporto() {
     }
     return novoAeroporto;
 }
-
+/*----------------------------------------------------------------------------------------
+| Nome: criarAeroportoNode
+| Ação: Aloca um bloco de memória do tamanho do tipo AeroportoNode utilizando a função calloc
+|       que inicializa todos os bits a zero, não sendo necessário inicializar os campos da
+        estrutura AeroportoNode. Verifica se a alocação de memória foi bem sucedida, se não for
+        dá exit. Atribui o aeroporto ao Nó, e os endereços do nó à esquerda e do nó à direita a NULL.
+| Devolve: O ponteiro para o novoAeroportoNode.
+------------------------------------------------------------------------------------------*/
 AeroportoNode *criarAeroportoNode(Aeroporto *aeroporto) {
     AeroportoNode *novoAeroportoNode = (AeroportoNode *)calloc(1, sizeof(AeroportoNode));
     if (novoAeroportoNode == NULL) {
@@ -32,16 +38,14 @@ AeroportoNode *criarAeroportoNode(Aeroporto *aeroporto) {
     novoAeroportoNode->esquerda = NULL;
     return novoAeroportoNode;
 }
-
 /*----------------------------------------------------------------------------------------
-| Nome: obterValorLetra
+| Nome: 
 | Ação: Recebe como argumento uma letra e converte essa letra para maiuscula utilizando a
         função toupper. Subtrai o caractere 'A' do caractere maiúsculo resultante para 
         obter um deslocamento em relação à letra 'A'. O deslocamento é convertido para
          o tipo ValorLetra
 | Devolve: Devolve o deslocamento convertido para o tipo ValorLetra
 ------------------------------------------------------------------------------------------*/
-
 AeroportoNode *inserirNo(AeroportoNode *raiz, Aeroporto *aeroporto) {
     if (raiz == NULL) {
         return criarAeroportoNode(aeroporto);

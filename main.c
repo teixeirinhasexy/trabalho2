@@ -50,12 +50,16 @@ int main(int argc, char *argv[]) {
             break;
             
         case '4': 
-
+            procurarArmazenarVoosComUmaEscala(raizAirline, argv[1], argv[2], &raizRotas);
+            imprimirRotas(raizRotas);
+            libertarRotas(raizRotas);
             printf("\ncomand(-limpar) para limpar o ecra");
             break;
         
         case '5': 
-
+            procurarArmazenarVoosComDuasEscala(raizAirline, argv[1], argv[2], &raizRotas);
+            imprimirRotas(raizRotas);
+            libertarRotas(raizRotas);
             printf("\ncomand(-limpar) para limpar o ecra");
             break;
             
@@ -78,8 +82,7 @@ int main(int argc, char *argv[]) {
 
     }
 
-    //liberarAeroportos(listaAeroportos);
-    //libertarAirlines(listaAirlines);
+
     libertarArvore(raiz);
     libertarArvoreAirline(raizAirline);
     return 0;
